@@ -2,7 +2,13 @@
 
 var Tetromino = function()
 {
-	self.rotation = 0;
+	this.rotationIndex = 0;
+
+	this.blockSize = 30;
+
+	this.positions = [];
+
+	this.shouldShowNegativePositionBlocks = false;
 }
 
 Tetromino.prototype = new PIXI.DisplayObjectContainer();
@@ -10,104 +16,199 @@ Tetromino.prototype.constructor = Tetromino;
 
 Tetromino.prototype.rotate = function()
 {
-	console.log("Not rotateing");
+	if (this.positions.length > 1)
+	{
+		this.rotationIndex = ++this.rotationIndex % this.positions.length;
+
+		for (var b = 0; b < this.children.length;  b++)
+		{
+			var tmpBlock = this.children[b];
+
+			tmpBlock.position.x = this.positions[this.rotationIndex][b][0]*this.blockSize;
+			tmpBlock.position.y = this.positions[this.rotationIndex][b][1]*this.blockSize;
+
+			if (this.shouldShowNegativePositionBlocks)
+			{
+				tmpBlock.visible = true;
+			}
+			else if(this.positions[this.rotationIndex][b][1] < 0)
+			{
+				tmpBlock.visible = false;
+			}
+		}
+	};
 }
+
+Tetromino.prototype.addBlocks = function(blockTexture)
+{
+	for (var b = 0; b < this.positions[this.rotationIndex].length;  b++)
+	{
+		var tmpBlock = new PIXI.Sprite(blockTexture);
+
+		tmpBlock.position.x = this.positions[this.rotationIndex][b][0]*this.blockSize;
+		tmpBlock.position.y = this.positions[this.rotationIndex][b][1]*this.blockSize;
+
+		this.addChild(tmpBlock);
+	}
+}
+
+Tetromino.prototype.showAllBlocks = function(blockTexture)
+{
+	this.shouldShowNegativePositionBlocks = true;
+
+	for (var b = 0; b < this.children.length;  b++)
+	{
+		this.children[b].visible = true;
+	}
+}
+
+// 	###
+// 	 # 
 
 var TTetromino = function()
 {
-	var blockTexture = PIXI.Texture.fromImage("blocks/purple.block.png");
+	var blockTexture = PIXI.Texture.fromImage("images/blocks/purple.block.png");
 
-	this.blockSprite1 = new PIXI.Sprite(blockTexture);
-	this.blockSprite1.position.x = 30;
+	this.positions = 
+	[ 
+		[[0,0],[1,0],[2,0],[1,1]],
+		[[1,-1],[0,0],[1,0],[1,1]],
+		[[1,-1],[0,0],[1,0],[2,0]],
+		[[1,-1],[1,0],[2,0],[1,1]]
+	];
 
-	this.blockSprite2 = new PIXI.Sprite(blockTexture);
-	this.blockSprite2.position.y = 30;
-
-	this.blockSprite3 = new PIXI.Sprite(blockTexture);
-	this.blockSprite3.position.x = 30;
-	this.blockSprite3.position.y = 30;
-
-	this.blockSprite4 = new PIXI.Sprite(blockTexture);
-	this.blockSprite4.position.x = 60;
-	this.blockSprite4.position.y = 30;
-
-	this.addChild(this.blockSprite1);
-	this.addChild(this.blockSprite2);
-	this.addChild(this.blockSprite3);
-	this.addChild(this.blockSprite4);
+	this.addBlocks(blockTexture);
 }
 
 TTetromino.prototype = new Tetromino();
 TTetromino.prototype.constructor = TTetromino;
 
-TTetromino.prototype.rotate = function()
+
+// 	##
+// 	##
+
+var OTetromino = function()
 {
-	console.log("rotate");
-	console.log(self.rotation);
+	var blockTexture = PIXI.Texture.fromImage("images/blocks/yellow.block.png");
 
-	if (self.rotation == 0)
-	{
-		this.blockSprite1.position.x = 30;
-		this.blockSprite1.position.y = 0;
+	this.positions = 
+	[ 
+		[[0,0],[1,0],[0,1],[1,1]],
+	];
 
-		this.blockSprite2.position.x = 30;
-		this.blockSprite2.position.y = 60;
-
-		this.blockSprite3.position.x = 30;
-		this.blockSprite3.position.y = 30;
-
-		this.blockSprite4.position.x = 60;
-		this.blockSprite4.position.y = 30;
-
-		self.rotation = 1;
-	}
-	else if(self.rotation == 1)
-	{
-		this.blockSprite1.position.x = 0;
-		this.blockSprite1.position.y = 30;
-
-		this.blockSprite2.position.x = 30;
-		this.blockSprite2.position.y = 60;
-
-		this.blockSprite3.position.x = 30;
-		this.blockSprite3.position.y = 30;
-
-		this.blockSprite4.position.x = 60;
-		this.blockSprite4.position.y = 30;
-
-		self.rotation = 2;
-	}
-	else if(self.rotation == 2)
-	{
-		this.blockSprite1.position.x = 0;
-		this.blockSprite1.position.y = 30;
-
-		this.blockSprite2.position.x = 30;
-		this.blockSprite2.position.y = 60;
-
-		this.blockSprite3.position.x = 30;
-		this.blockSprite3.position.y = 30;
-
-		this.blockSprite4.position.x = 30;
-		this.blockSprite4.position.y = 00;
-
-
-		self.rotation = 3;
-	}
-	else if(self.rotation == 3)
-	{
-		this.blockSprite1.position.x = 30;
-		this.blockSprite1.position.y = 0;
-
-		this.blockSprite2.position.x = 0;
-		this.blockSprite2.position.y = 30;
-
-		this.blockSprite3.position.x = 30;
-		this.blockSprite3.position.y = 30;
-
-		this.blockSprite4.position.x = 60;
-		this.blockSprite4.position.y = 30;
-
-		self.rotation = 0;
-	}
+	this.addBlocks(blockTexture);
 }
+
+OTetromino.prototype = new Tetromino();
+OTetromino.prototype.constructor = OTetromino;
+
+
+// ####
+
+var ITetromino = function()
+{
+	var blockTexture = PIXI.Texture.fromImage("images/blocks/light.blue.block.png");
+
+	this.positions = 
+	[ 
+		[[-1,0],[0,0],[1,0],[2,0]],
+		[[0,-2],[0,-1],[0,0],[0,1]]
+	];
+
+	this.addBlocks(blockTexture);
+}
+
+ITetromino.prototype = new Tetromino();
+ITetromino.prototype.constructor = ITetromino;
+
+
+//   #
+//   #
+//  ##
+
+var JTetromino = function()
+{
+	var blockTexture = PIXI.Texture.fromImage("images/blocks/dark.blue.block.png");
+
+	this.positions = 
+	[
+		[[0,0],[1,0],[2,0],[2,1]],
+		[[1,-1],[1,0],[0,1],[1,1]],
+		[[0,-1],[0,0],[1,0],[2,0]],
+		[[1,-1],[2,-1],[1,0],[1,1]]
+	];
+
+	this.addBlocks(blockTexture);
+}
+
+JTetromino.prototype = new Tetromino();
+JTetromino.prototype.constructor = JTetromino
+
+
+//  #
+//  #
+//  ##
+
+var LTetromino = function()
+{
+	var blockTexture = PIXI.Texture.fromImage("images/blocks/orange.block.png");
+
+	this.positions = 
+	[
+		[[0,0],[1,0],[2,0],[0,1]],
+		[[0,-1],[1,-1],[1,0],[1,1]],
+		[[2,-1],[0,0],[1,0],[2,0]],
+		[[1,-1],[1,0],[1,1],[2,1]]
+	];
+
+	this.addBlocks(blockTexture);
+}
+
+LTetromino.prototype = new Tetromino();
+LTetromino.prototype.constructor = LTetromino
+
+
+//   ##
+//  ##
+
+var STetromino = function()
+{
+	var blockTexture = PIXI.Texture.fromImage("images/blocks/green.block.png");
+
+	this.positions = 
+	[
+		[[1,0],[2,0],[0,1],[1,1]],
+		[[1,0],[1,1],[2,1],[2,2]],
+		[[1,1],[2,1],[0,2],[1,2]],
+		[[0,0],[0,1],[1,1],[1,2]]
+	];
+
+	this.addBlocks(blockTexture);
+}
+
+STetromino.prototype = new Tetromino();
+STetromino.prototype.constructor = STetromino
+
+
+//  ##
+//   ##
+
+var ZTetromino = function()
+{
+	var blockTexture = PIXI.Texture.fromImage("images/blocks/red.block.png");
+
+	this.positions = 
+	[
+		[[0,0],[1,0],[1,1],[2,1]],
+		[[2,0],[1,1],[2,1],[1,2]],
+		[[0,1],[1,1],[1,2],[2,2]],
+		[[1,0],[0,1],[1,1],[0,2]]
+	];
+
+	console.log(this.positions);
+
+	this.addBlocks(blockTexture);
+}
+
+ZTetromino.prototype = new Tetromino();
+ZTetromino.prototype.constructor = ZTetromino
