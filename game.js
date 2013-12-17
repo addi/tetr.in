@@ -1,6 +1,6 @@
 //  Game code
 var rendererWeight = 800;
-var rendererHeight = 700;
+var rendererHeight = 600;
 
 // create an new instance of a pixi stage
 var stage = new PIXI.Stage(0x000000);

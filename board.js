@@ -13,6 +13,8 @@ var Board = function()
 
 	this.addTetromino();
 
+	this.blockSize = 30;
+
 	this.board = new Array(10);
   
   	for (var x = 0; x < 10; x++)
@@ -41,15 +43,26 @@ Board.prototype.rotate = function()
 
 Board.prototype.moveLeft = function()
 {
-	// console.log(this);
+	var currentTetrominoPosition = this.currentTetromino.position.x / this.blockSize;
 
-	this.currentTetromino.position.x -= 30;
+	currentTetrominoPosition += this.currentTetromino.leftMostBrickPosition();
+
+	if (currentTetrominoPosition > 1)
+	{
+		this.currentTetromino.position.x -= 30;
+	};
 }
 
 Board.prototype.moveRight = function(e)
 {
-	// console.log(this.currentTetromino);
-	this.currentTetromino.position.x += 30;
+	var currentTetrominoPosition = this.currentTetromino.position.x / this.blockSize;
+
+	currentTetrominoPosition += this.currentTetromino.rightMostBrickPosition();
+
+	if (currentTetrominoPosition < 10)
+	{
+		this.currentTetromino.position.x += 30;
+	}
 }
 
 Board.prototype.moveDown = function()

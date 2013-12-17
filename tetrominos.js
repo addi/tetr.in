@@ -27,7 +27,7 @@ Tetromino.prototype.rotate = function()
 			tmpBlock.position.x = this.positions[this.rotationIndex][b][0]*this.blockSize;
 			tmpBlock.position.y = this.positions[this.rotationIndex][b][1]*this.blockSize;
 
-			if (this.shouldShowNegativePositionBlocks)
+			if (this.shouldShowNegativePositionBlocks || this.positions[this.rotationIndex][b][1] >= 0)
 			{
 				tmpBlock.visible = true;
 			}
@@ -60,6 +60,30 @@ Tetromino.prototype.showAllBlocks = function(blockTexture)
 	{
 		this.children[b].visible = true;
 	}
+}
+
+Tetromino.prototype.leftMostBrickPosition = function()
+{
+	var leftmost = 4;
+
+	for (var b = 0; b < this.positions[this.rotationIndex].length;  b++)
+	{
+		leftmost = Math.min(leftmost, this.positions[this.rotationIndex][b][0]);
+	}
+
+	return leftmost;
+}
+
+Tetromino.prototype.rightMostBrickPosition = function()
+{
+	var rightmost = -4;
+
+	for (var b = 0; b < this.positions[this.rotationIndex].length;  b++)
+	{
+		rightmost = Math.max(rightmost, this.positions[this.rotationIndex][b][0]);
+	}
+
+	return rightmost;
 }
 
 // 	###
