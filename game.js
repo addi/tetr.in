@@ -18,7 +18,7 @@ stage.addChild(board);
 
 function pressUp(e)
 {
-	board.rotate(); 
+	board.rotate();
 }
 
 function pressLeft(e)
