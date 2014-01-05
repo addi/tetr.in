@@ -49,14 +49,20 @@ kd.SPACE.press(pressSpace);
 
 requestAnimFrame( gameloop );
 
+var lastUpdateTime = 0;
+
 function gameloop()
 {
     requestAnimFrame( gameloop );
 
-    // just for fun, lets rotate mr rabbit a little
-    // bunny.rotation += 0.1;
-	
-    // render the stage   
+    var currentTime = Date.now();
+
+    var deltaTime = currentTime - lastUpdateTime;
+
+    lastUpdateTime = currentTime;
+
+    // board.update(deltaTime);
+
     renderer.render(stage);
 
     kd.tick();

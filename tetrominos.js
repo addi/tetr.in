@@ -86,6 +86,18 @@ Tetromino.prototype.rightMostBrickPosition = function()
 	return rightmost;
 }
 
+Tetromino.prototype.lowestBrickPosition = function()
+{
+	var lowest = -4;
+
+	for (var b = 0; b < this.positions[this.rotationIndex].length;  b++)
+	{
+		lowest = Math.max(lowest, this.positions[this.rotationIndex][b][1]);
+	}
+
+	return lowest;
+}
+
 // 	###
 // 	 # 
 

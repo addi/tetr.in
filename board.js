@@ -11,7 +11,10 @@ var Board = function()
 
 	this.addChild(this.boardSprite);
 
+	this.timeSinceLastTetrominoMovedDown = 0;
+
 	this.addTetromino();
+	// this.addTetromino();
 
 	this.blockSize = 30;
 
@@ -28,17 +31,43 @@ Board.prototype.constructor = Board;
 
 Board.prototype.addTetromino = function()
 {
-	this.currentTetromino = new JTetromino();
+	console.log("addTetromino ... ");
 
-	this.currentTetromino.position.x = 150;
-	this.currentTetromino.position.y = 30;
+	console.log(this.currentTetromino);
 
-	this.addChild(this.currentTetromino);
+	var newTetromino = new JTetromino();
+
+	newTetromino.position.x = 150;
+	newTetromino.position.y = 30;
+
+	console.log("add child");
+
+	this.addChild(newTetromino);
+
+	console.log("done adding the Child");	
+
+	this.currentTetromino = newTetromino;
+
+	console.log(this.currentTetromino);
 }
 
 Board.prototype.rotate = function()
 {
+	var currentTetrominoPosition = this.currentTetromino.position.x / this.blockSize;
+
 	this.currentTetromino.rotate();
+
+	var rightMostPosition = currentTetrominoPosition + this.currentTetromino.rightMostBrickPosition();
+	var leftMostPosition = currentTetrominoPosition + this.currentTetromino.leftMostBrickPosition();
+
+	if (rightMostPosition > 10)
+	{
+		this.currentTetromino.position.x -= this.blockSize;
+	}
+	else if(leftMostPosition < 1)
+	{
+		this.currentTetromino.position.x += this.blockSize;
+	}
 }
 
 Board.prototype.moveLeft = function()
@@ -49,7 +78,7 @@ Board.prototype.moveLeft = function()
 
 	if (currentTetrominoPosition > 1)
 	{
-		this.currentTetromino.position.x -= 30;
+		this.currentTetromino.position.x -= this.blockSize;
 	};
 }
 
@@ -61,18 +90,45 @@ Board.prototype.moveRight = function(e)
 
 	if (currentTetrominoPosition < 10)
 	{
-		this.currentTetromino.position.x += 30;
+		this.currentTetromino.position.x += this.blockSize;
 	}
 }
 
 Board.prototype.moveDown = function()
 {
-	this.currentTetromino.position.y += 30;
-
 	this.currentTetromino.showAllBlocks();
+	this.timeSinceLastTetrominoMovedDown = 0;
+
+	var currentYPosition = this.currentTetromino.position.y / this.blockSize;
+	
+	currentYPosition += this.currentTetromino.lowestBrickPosition();
+
+	if (currentYPosition < 19)
+	{
+		this.currentTetromino.position.y += this.blockSize;
+	}
+	else
+	{
+		console.log("addTetromino");
+
+		console.log(this);
+
+		this.addTetromino();
+	}
 }
 
 Board.prototype.drop = function()
 {
 	console.log("drop");
 }
+
+// Board.prototype.update = function(delta)
+// {
+// 	this.timeSinceLastTetrominoMovedDown += delta;
+
+// 	if (this.timeSinceLastTetrominoMovedDown > 1000)
+// 	{
+// 		// this.moveDown();
+// 	};
+	
+// }
