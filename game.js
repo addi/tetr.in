@@ -1,17 +1,22 @@
 //  Game code
 var rendererWeight = 800;
-var rendererHeight = 600;
+var rendererHeight = 630;
 
 // create an new instance of a pixi stage
 var stage = new PIXI.Stage(0x000000);
 	
 // create a renderer instance
+
+// var renderer = PIXI.CanvasRenderer(rendererWeight, rendererHeight);
 var renderer = PIXI.autoDetectRenderer(rendererWeight, rendererHeight);
 	
 // add the renderer view element to the DOM
 document.body.appendChild(renderer.view);
 
 var board = new Board();
+
+board.position.x = 30;
+board.position.y = 30;
 
 stage.addChild(board);
 
@@ -61,7 +66,7 @@ function gameloop()
 
     lastUpdateTime = currentTime;
 
-    // board.update(deltaTime);
+    board.update(deltaTime);
 
     renderer.render(stage);
 
