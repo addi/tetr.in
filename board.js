@@ -1,20 +1,19 @@
 // //  Game classes
 
+var NORMAL_BLOCK = 1;
+
 var Board = function()
 {
+	PIXI.DisplayObjectContainer.call( this );
+
+
 	var boardTexture = PIXI.Texture.fromImage("images/board.png");
 
 	this.boardSprite = new PIXI.Sprite(boardTexture);
 
-	this.boardSprite.position.x = 30;
-	this.boardSprite.position.y = 30;
-
 	this.addChild(this.boardSprite);
 
 	this.timeSinceLastTetrominoMovedDown = 0;
-
-	this.addTetromino();
-	// this.addTetromino();
 
 	this.blockSize = 30;
 
@@ -23,48 +22,80 @@ var Board = function()
   	for (var x = 0; x < 10; x++)
   	{
     	this.board[x] = new Array(20);
+
+    	for (var y = 0; y < 20; y++)
+    	{
+    		this.board[x][y] = 0;
+    	}
   	}
+
+  	this.done = false;
+
+  	this.addTetromino();
 }
 
-Board.prototype = new PIXI.DisplayObjectContainer();
+Board.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 Board.prototype.constructor = Board;
 
 Board.prototype.addTetromino = function()
 {
 	console.log("addTetromino ... ");
 
-	console.log(this.currentTetromino);
+	var randomNumber = Math.floor((Math.random()*7));
 
-	var newTetromino = new JTetromino();
+	// randomNumber = 2;
 
-	newTetromino.position.x = 150;
-	newTetromino.position.y = 30;
+	if (randomNumber == 0)
+	{
+		this.currentTetromino = new TTetromino();
+	}
+	else if(randomNumber == 1)
+	{
+		this.currentTetromino = new OTetromino();
+	}
+	else if(randomNumber == 2)
+	{
+		this.currentTetromino = new ITetromino();
+	}
+	else if(randomNumber == 3)
+	{
+		this.currentTetromino = new JTetromino();
+	}
+	else if(randomNumber == 4)
+	{
+		this.currentTetromino = new LTetromino();
+	}
+	else if(randomNumber == 5)
+	{
+		this.currentTetromino = new STetromino();
+	}
+	else //if(randomNumber == 6)
+	{
+		this.currentTetromino = new ZTetromino();
+	}
 
-	console.log("add child");
+	// this.currentTetromino = new JTetromino();
 
-	this.addChild(newTetromino);
+	this.currentTetromino.position.x = this.blockSize * 4;
+	this.currentTetromino.position.y = 0;
 
-	console.log("done adding the Child");	
-
-	this.currentTetromino = newTetromino;
-
-	console.log(this.currentTetromino);
+	this.addChild(this.currentTetromino);
 }
 
 Board.prototype.rotate = function()
 {
-	var currentTetrominoPosition = this.currentTetromino.position.x / this.blockSize;
-
 	this.currentTetromino.rotate();
+
+	var currentTetrominoPosition = this.currentTetromino.position.x / this.blockSize;
 
 	var rightMostPosition = currentTetrominoPosition + this.currentTetromino.rightMostBrickPosition();
 	var leftMostPosition = currentTetrominoPosition + this.currentTetromino.leftMostBrickPosition();
 
-	if (rightMostPosition > 10)
+	if (rightMostPosition > 9)
 	{
 		this.currentTetromino.position.x -= this.blockSize;
 	}
-	else if(leftMostPosition < 1)
+	else if(leftMostPosition < 0)
 	{
 		this.currentTetromino.position.x += this.blockSize;
 	}
@@ -72,23 +103,21 @@ Board.prototype.rotate = function()
 
 Board.prototype.moveLeft = function()
 {
-	var currentTetrominoPosition = this.currentTetromino.position.x / this.blockSize;
+	var currentXPosition = this.currentTetromino.position.x / this.blockSize;
+	var currentYPosition = this.currentTetromino.position.y / this.blockSize;
 
-	currentTetrominoPosition += this.currentTetromino.leftMostBrickPosition();
-
-	if (currentTetrominoPosition > 1)
+	if (this.canMoveTo(currentXPosition - 1, currentYPosition))
 	{
 		this.currentTetromino.position.x -= this.blockSize;
-	};
+	}
 }
 
 Board.prototype.moveRight = function(e)
 {
-	var currentTetrominoPosition = this.currentTetromino.position.x / this.blockSize;
+	var currentXPosition = this.currentTetromino.position.x / this.blockSize;
+	var currentYPosition = this.currentTetromino.position.y / this.blockSize;
 
-	currentTetrominoPosition += this.currentTetromino.rightMostBrickPosition();
-
-	if (currentTetrominoPosition < 10)
+	if (this.canMoveTo(currentXPosition + 1, currentYPosition))
 	{
 		this.currentTetromino.position.x += this.blockSize;
 	}
@@ -96,23 +125,23 @@ Board.prototype.moveRight = function(e)
 
 Board.prototype.moveDown = function()
 {
-	this.currentTetromino.showAllBlocks();
 	this.timeSinceLastTetrominoMovedDown = 0;
 
+	var currentXPosition = this.currentTetromino.position.x / this.blockSize;
 	var currentYPosition = this.currentTetromino.position.y / this.blockSize;
-	
-	currentYPosition += this.currentTetromino.lowestBrickPosition();
 
-	if (currentYPosition < 19)
+	// move 1 down
+	if (this.canMoveTo(currentXPosition, currentYPosition + 1))
 	{
+		this.currentTetromino.showAllBlocks();
+
 		this.currentTetromino.position.y += this.blockSize;
 	}
-	else
+	else // if(this.done == false)
 	{
-		console.log("addTetromino");
+		// this.done = true;
 
-		console.log(this);
-
+		this.savePosition();
 		this.addTetromino();
 	}
 }
@@ -122,13 +151,51 @@ Board.prototype.drop = function()
 	console.log("drop");
 }
 
-// Board.prototype.update = function(delta)
-// {
-// 	this.timeSinceLastTetrominoMovedDown += delta;
+Board.prototype.canMoveTo = function(x, y)
+{
+	var currentTetrominoPositions = this.currentTetromino.currentPositions();
 
-// 	if (this.timeSinceLastTetrominoMovedDown > 1000)
-// 	{
-// 		// this.moveDown();
-// 	};
-	
-// }
+	for (var b = 0; b < currentTetrominoPositions.length;  b++)
+	{
+		var blockX = x+currentTetrominoPositions[b][0]
+		var blockY = y+currentTetrominoPositions[b][1]
+
+		// console.log(blockX + " - "+ blockY);
+
+		if (blockX < 0 ||
+			blockX > 9 ||
+			blockY > 19 || 
+			this.board[blockX][blockY] != 0)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+Board.prototype.savePosition = function()
+{
+	var currentXPosition = this.currentTetromino.position.x / this.blockSize;
+	var currentYPosition = this.currentTetromino.position.y / this.blockSize;
+
+	var currentTetrominoPositions = this.currentTetromino.currentPositions();
+
+	for (var b = 0; b < currentTetrominoPositions.length;  b++)
+	{
+		var blockX = currentXPosition+currentTetrominoPositions[b][0]
+		var blockY = currentYPosition+currentTetrominoPositions[b][1]
+
+		this.board[blockX][blockY] = NORMAL_BLOCK;
+	}
+}
+
+Board.prototype.update = function(delta)
+{
+	this.timeSinceLastTetrominoMovedDown += delta;
+
+	if (this.timeSinceLastTetrominoMovedDown > 1000)
+	{
+		this.moveDown();
+	}
+}
