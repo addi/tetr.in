@@ -6,7 +6,6 @@ var Board = function()
 {
 	PIXI.DisplayObjectContainer.call( this );
 
-
 	var boardTexture = PIXI.Texture.fromImage("images/board.png");
 
 	this.boardSprite = new PIXI.Sprite(boardTexture);
@@ -130,17 +129,14 @@ Board.prototype.moveDown = function()
 	var currentXPosition = this.currentTetromino.position.x / this.blockSize;
 	var currentYPosition = this.currentTetromino.position.y / this.blockSize;
 
-	// move 1 down
 	if (this.canMoveTo(currentXPosition, currentYPosition + 1))
 	{
-		this.currentTetromino.showAllBlocks();
+		this.currentTetromino.showMoreNegativeBlocks();
 
 		this.currentTetromino.position.y += this.blockSize;
 	}
-	else // if(this.done == false)
+	else
 	{
-		// this.done = true;
-
 		this.savePosition();
 		this.addTetromino();
 	}
@@ -148,7 +144,40 @@ Board.prototype.moveDown = function()
 
 Board.prototype.drop = function()
 {
-	console.log("drop");
+	var currentXPosition = this.currentTetromino.position.x / this.blockSize;
+	var currentYPosition = this.currentTetromino.position.y / this.blockSize;
+
+	var howFarDown = 0;
+
+	while(this.canMoveTo(currentXPosition, currentYPosition + howFarDown))
+	{
+		howFarDown += 1
+	}
+
+
+	if (howFarDown < 2)
+	{
+		this.moveDown();
+	}
+	else
+	{
+		this.timeSinceLastTetrominoMovedDown = 0;
+
+		// a bit too far down
+		howFarDown -= 1;
+
+		this.currentTetromino.showMoreNegativeBlocks();
+		
+		if (howFarDown > 1)
+		{
+			this.currentTetromino.showMoreNegativeBlocks();
+		}
+
+		this.currentTetromino.position.y += this.blockSize * howFarDown;
+
+		this.savePosition();
+		this.addTetromino();
+	}
 }
 
 Board.prototype.canMoveTo = function(x, y)
@@ -162,10 +191,11 @@ Board.prototype.canMoveTo = function(x, y)
 
 		// console.log(blockX + " - "+ blockY);
 
-		if (blockX < 0 ||
+		if (blockY >= 0 && (
+			blockX < 0 ||
 			blockX > 9 ||
 			blockY > 19 || 
-			this.board[blockX][blockY] != 0)
+			this.board[blockX][blockY] != 0))
 		{
 			return false;
 		}
@@ -186,7 +216,10 @@ Board.prototype.savePosition = function()
 		var blockX = currentXPosition+currentTetrominoPositions[b][0]
 		var blockY = currentYPosition+currentTetrominoPositions[b][1]
 
-		this.board[blockX][blockY] = NORMAL_BLOCK;
+		if (blockY >= 0 && this.board[blockX][blockY] == 0)
+		{
+			this.board[blockX][blockY] = NORMAL_BLOCK;
+		}
 	}
 }
 
