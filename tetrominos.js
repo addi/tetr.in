@@ -10,7 +10,7 @@ var Tetromino = function()
 
 	this.positions = [];
 
-	this.shouldShowNegativePositionBlocks = false;
+	this.shouldShowNegativePositionBlocks = 0;
 }
 
 // Tetromino.prototype = new PIXI.DisplayObjectContainer();
@@ -27,18 +27,10 @@ Tetromino.prototype.rotate = function()
 		{
 			var tmpBlock = this.children[b];
 
-
 			tmpBlock.position.x = this.positions[this.rotationIndex][b][0]*this.blockSize;
 			tmpBlock.position.y = this.positions[this.rotationIndex][b][1]*this.blockSize;
 
-			if (this.shouldShowNegativePositionBlocks || this.positions[this.rotationIndex][b][1] >= 0)
-			{
-				tmpBlock.visible = true;
-			}
-			else if(this.positions[this.rotationIndex][b][1] < 0)
-			{
-				tmpBlock.visible = false;
-			}
+			tmpBlock.visible = (this.positions[this.rotationIndex][b][1] >= this.shouldShowNegativePositionBlocks)
 		}
 	};
 }
@@ -61,13 +53,13 @@ Tetromino.prototype.addBlocks = function(blockTexture)
 	}
 }
 
-Tetromino.prototype.showAllBlocks = function(blockTexture)
+Tetromino.prototype.showMoreNegativeBlocks = function(blockTexture)
 {
-	this.shouldShowNegativePositionBlocks = true;
+	this.shouldShowNegativePositionBlocks -= 1;
 
 	for (var b = 0; b < this.children.length;  b++)
 	{
-		this.children[b].visible = true;
+		this.children[b].visible = (this.positions[this.rotationIndex][b][1] >= this.shouldShowNegativePositionBlocks)
 	}
 }
 
