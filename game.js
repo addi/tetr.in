@@ -138,9 +138,9 @@ function gameloop()
     {
     	timeSinceLastDown += deltaTime;
 
-    	if (timeSinceLastDown > 100)
+    	if (timeSinceLastDown > 75)
     	{
-    		timeSinceLastDown %= 100;
+    		timeSinceLastDown %= 75;
 
     		board.moveDown();
     	}
