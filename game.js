@@ -20,25 +20,57 @@ board.position.y = 30;
 
 stage.addChild(board);
 
+var leftIsDown = false;
+var timeSinceLastLeft = 0;
+
+var rightIsDown = false;
+var timeSinceLastRight = 0;
+
+var downIsDown = false;
+var timeSinceLastDown = 0;
 
 function pressUp(e)
 {
 	board.rotate();
 }
 
-function pressLeft(e)
+function leftDown(e)
 {
 	board.moveLeft();
+
+	leftIsDown = true;
+	timeSinceLastLeft = -170;
 }
 
-function pressRight(e)
+function leftUp(e)
+{
+	leftIsDown = false;
+}
+
+function rightDown(e)
 {
 	board.moveRight();
+
+	rightIsDown = true;
+	timeSinceLastRight = -170;
 }
 
-function pressDown(e)
+function rightUp(e)
+{
+	rightIsDown = false;
+}
+
+function downDown(e)
 {
 	board.moveDown();
+
+	downIsDown = true;
+	timeSinceLastDown = 0;
+}
+
+function downUp(e)
+{
+	downIsDown = false;
 }
 
 function pressSpace(e)
@@ -47,9 +79,17 @@ function pressSpace(e)
 }
 
 kd.UP.press(pressUp);
-kd.LEFT.press(pressLeft);
-kd.RIGHT.press(pressRight);
-kd.DOWN.press(pressDown);
+
+
+kd.LEFT.press(leftDown);
+kd.LEFT.up(leftUp);
+
+kd.RIGHT.press(rightDown);
+kd.RIGHT.up(rightUp);
+
+kd.DOWN.press(downDown);
+kd.DOWN.up(downUp);
+
 kd.SPACE.press(pressSpace);
 
 requestAnimFrame( gameloop );
@@ -60,6 +100,8 @@ function gameloop()
 {
     requestAnimFrame( gameloop );
 
+    kd.tick();
+
     var currentTime = Date.now();
 
     var deltaTime = currentTime - lastUpdateTime;
@@ -68,7 +110,41 @@ function gameloop()
 
     board.update(deltaTime);
 
-    renderer.render(stage);
+    if (leftIsDown)
+    {
+    	timeSinceLastLeft += deltaTime;
 
-    kd.tick();
+    	if (timeSinceLastLeft > 40)
+    	{
+    		timeSinceLastLeft %= 40;
+
+    		board.moveLeft();
+    	}
+    }
+
+    if (rightIsDown)
+    {
+    	timeSinceLastRight += deltaTime;
+
+    	if (timeSinceLastRight > 40)
+    	{
+    		timeSinceLastRight %= 40;
+
+    		board.moveRight();
+    	}
+    }
+
+    if (downIsDown)
+    {
+    	timeSinceLastDown += deltaTime;
+
+    	if (timeSinceLastDown > 100)
+    	{
+    		timeSinceLastDown %= 100;
+
+    		board.moveDown();
+    	}
+    }
+
+    renderer.render(stage);    
 }
