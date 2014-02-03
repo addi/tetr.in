@@ -31,19 +31,6 @@ var Board = function()
     	}
 	}
 
-
-	// this.board = new Array(this.boardWidth)
-  
- //  	for (var x = 0; x < this.boardWidth; x++)
- //  	{
- //    	this.board[x] = new Array(this.boardHeight);
-
- //    	for (var y = 0; y < this.boardHeight; y++)
- //    	{
- //    		this.board[x][y] = { "type": 0 };
- //    	}
- //  	}
-
   	this.done = false;
 
   	this.addTetromino();
@@ -271,9 +258,44 @@ Board.prototype.checkLines = function()
 
 		if (this.isLineFull(line))
 		{
-			console.log("full line")
+			console.log(this.lines);
+
+			// console.log("move down")
 
 			this.removeLine(line)
+			this.moveLinesDown(l)
+
+			// just a cute little shitmix
+			l++;
+
+
+
+			// console.log(this.lines);
+		}
+	}
+}
+
+Board.prototype.moveLinesDown = function(lineIndex)
+{
+	console.log(lineIndex)
+
+	this.lines[0] = this.lines[lineIndex];
+
+	for (var l = lineIndex; l > 2;  l--)
+	{
+		this.lines[l] = this.lines[l-1]
+
+		this.moveDownLineSprites(this.lines[l])
+	}
+}
+
+Board.prototype.moveDownLineSprites = function(line)
+{
+	for (var b = 0; b < line.length;  b++)
+	{
+		if (line[b]["type"] != 0)
+		{
+			line[b]["sprite"].position.y += this.blockSize;
 		}
 	}
 }
@@ -307,10 +329,8 @@ Board.prototype.update = function(delta)
 {
 	this.timeSinceLastTetrominoMovedDown += delta;
 
-	if (this.timeSinceLastTetrominoMovedDown > 1000 && this.shouldNotMoveDown == false)
+	if (this.timeSinceLastTetrominoMovedDown > 1000)
 	{
 		this.moveDown();
-
-		this.shouldNotMoveDown = true
 	}
 }
