@@ -16,17 +16,33 @@ var Board = function()
 
 	this.blockSize = 30;
 
-	this.board = new Array(10);
-  
-  	for (var x = 0; x < 10; x++)
-  	{
-    	this.board[x] = new Array(20);
+	this.boardWidth = 10
+	this.boardHeight = 20
 
-    	for (var y = 0; y < 20; y++)
+	this.lines = new Array(this.boardHeight)
+
+	for (var l = 0; l < this.boardHeight; l++)
+	{
+		this.lines[l] = new Array(this.boardWidth);
+
+    	for (var b = 0; b < this.boardWidth; b++)
     	{
-    		this.board[x][y] = 0;
+    		this.lines[l][b] = { "type": 0 };
     	}
-  	}
+	}
+
+
+	// this.board = new Array(this.boardWidth)
+  
+ //  	for (var x = 0; x < this.boardWidth; x++)
+ //  	{
+ //    	this.board[x] = new Array(this.boardHeight);
+
+ //    	for (var y = 0; y < this.boardHeight; y++)
+ //    	{
+ //    		this.board[x][y] = { "type": 0 };
+ //    	}
+ //  	}
 
   	this.done = false;
 
@@ -195,7 +211,7 @@ Board.prototype.canMoveTo = function(x, y)
 			blockX < 0 ||
 			blockX > 9 ||
 			blockY > 19 || 
-			this.board[blockX][blockY] != 0))
+			this.lines[blockY][blockX]["type"] != 0))
 		{
 			return false;
 		}
@@ -211,15 +227,79 @@ Board.prototype.savePosition = function()
 
 	var currentTetrominoPositions = this.currentTetromino.currentPositions();
 
+	this.removeChild(this.currentTetromino);
+
+	var blocks = []
+
 	for (var b = 0; b < currentTetrominoPositions.length;  b++)
 	{
 		var blockX = currentXPosition+currentTetrominoPositions[b][0]
 		var blockY = currentYPosition+currentTetrominoPositions[b][1]
 
-		if (blockY >= 0 && this.board[blockX][blockY] == 0)
+		var blockSprite = this.currentTetromino.children[b]
+
+		blockSprite.position.x = blockX * this.blockSize;
+		blockSprite.position.y = blockY * this.blockSize;
+
+		// shitmix, wtf is going on here? why cant i just add you as a child?!?
+		blocks.push(blockSprite)
+
+		if (blockY >= 0 && this.lines[blockY][blockX]["type"] == 0)
 		{
-			this.board[blockX][blockY] = NORMAL_BLOCK;
+			this.lines[blockY][blockX]["type"] = NORMAL_BLOCK;
+
+			this.lines[blockY][blockX]["sprite"] = blockSprite;
 		}
+	}
+
+	for (var i = 0; i < blocks.length;  i++)
+	{
+		this.addChild(blocks[i])
+	}
+
+	this.checkLines()
+}
+
+Board.prototype.checkLines = function()
+{
+	// this.boardWidth = 10
+	// this.boardHeight = 20
+
+	for (var l = this.boardHeight-1; l > 0;  l--)
+	{
+		var line = this.lines[l]
+
+		if (this.isLineFull(line))
+		{
+			console.log("full line")
+
+			this.removeLine(line)
+		}
+	}
+}
+
+Board.prototype.isLineFull = function(line)
+{
+	for (var b = 0; b < line.length;  b++)
+	{
+		if (line[b]["type"] == 0)
+		{
+			return false
+		}
+	}
+
+	return true
+}
+
+Board.prototype.removeLine = function(line)
+{
+	for (var b = 0; b < line.length;  b++)
+	{
+		this.removeChild(line[b]["sprite"])
+
+		line[b]["type"] = 0
+
+ 		line[b]["sprite"] = null
 	}
 }
 
@@ -227,8 +307,10 @@ Board.prototype.update = function(delta)
 {
 	this.timeSinceLastTetrominoMovedDown += delta;
 
-	if (this.timeSinceLastTetrominoMovedDown > 1000)
+	if (this.timeSinceLastTetrominoMovedDown > 1000 && this.shouldNotMoveDown == false)
 	{
 		this.moveDown();
+
+		this.shouldNotMoveDown = true
 	}
 }
