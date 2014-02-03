@@ -347,10 +347,10 @@ Board.prototype.removeLine = function(line)
 
 Board.prototype.update = function(delta)
 {
-	// this.timeSinceLastTetrominoMovedDown += delta;
+	this.timeSinceLastTetrominoMovedDown += delta;
 
-	// if (this.timeSinceLastTetrominoMovedDown > 1000)
-	// {
-	// 	this.moveDown();
-	// }
+	if (this.timeSinceLastTetrominoMovedDown > 1000)
+	{
+		this.moveDown();
+	}
 }
