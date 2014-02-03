@@ -231,6 +231,8 @@ Board.prototype.savePosition = function()
 		// shitmix, wtf is going on here? why cant i just add you as a child?!?
 		blocks.push(blockSprite)
 
+		console.log(blockY+"-"+blockX)
+
 		if (blockY >= 0 && this.lines[blockY][blockX]["type"] == 0)
 		{
 			this.lines[blockY][blockX]["type"] = NORMAL_BLOCK;
@@ -245,48 +247,66 @@ Board.prototype.savePosition = function()
 	}
 
 	this.checkLines()
+
+	// this.debug();
 }
 
 Board.prototype.checkLines = function()
 {
-	// this.boardWidth = 10
-	// this.boardHeight = 20
+	var checkAgain = false
 
-	for (var l = this.boardHeight-1; l > 0;  l--)
+	for (var l = this.lines.length-1; l > 0;  l--)
 	{
 		var line = this.lines[l]
 
 		if (this.isLineFull(line))
 		{
-			console.log(this.lines);
-
-			// console.log("move down")
+			console.log("line is full!");
 
 			this.removeLine(line)
 			this.moveLinesDown(l)
 
-			// just a cute little shitmix
-			l++;
-
-
-
-			// console.log(this.lines);
+			checkAgain = true
 		}
 	}
+
+	if (checkAgain)
+	{
+		this.checkLines();
+	}
+}
+
+Board.prototype.debug = function()
+{
+	var output = ""
+
+	for (var l = 0; l < this.lines.length;  l++)
+	{
+		this.lines[l]
+
+		for (var b = 0; b < this.lines[l].length;  b++)
+		{
+			output += this.lines[l][b]["type"];
+		}	
+
+		output += "\n"
+	}
+
+	console.log(output)
 }
 
 Board.prototype.moveLinesDown = function(lineIndex)
 {
-	console.log(lineIndex)
+	var lineToPutOnTop = this.lines[lineIndex]
 
-	this.lines[0] = this.lines[lineIndex];
-
-	for (var l = lineIndex; l > 2;  l--)
+	for (var l = lineIndex; l > 0;  l--)
 	{
 		this.lines[l] = this.lines[l-1]
 
 		this.moveDownLineSprites(this.lines[l])
 	}
+
+	this.lines[0] = lineToPutOnTop
 }
 
 Board.prototype.moveDownLineSprites = function(line)
@@ -327,10 +347,10 @@ Board.prototype.removeLine = function(line)
 
 Board.prototype.update = function(delta)
 {
-	this.timeSinceLastTetrominoMovedDown += delta;
+	// this.timeSinceLastTetrominoMovedDown += delta;
 
-	if (this.timeSinceLastTetrominoMovedDown > 1000)
-	{
-		this.moveDown();
-	}
+	// if (this.timeSinceLastTetrominoMovedDown > 1000)
+	// {
+	// 	this.moveDown();
+	// }
 }
