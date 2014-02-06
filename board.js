@@ -19,6 +19,9 @@ var Board = function()
 	this.boardWidth = 10
 	this.boardHeight = 20
 
+	// this.lastTetrominos = [1,5,6,1,5,6]
+	this.lastTetrominos = [1,5,6]
+
 	this.lines = new Array(this.boardHeight)
 
 	for (var l = 0; l < this.boardHeight; l++)
@@ -43,7 +46,24 @@ Board.prototype.addTetromino = function()
 {
 	console.log("addTetromino ... ");
 
-	var randomNumber = Math.floor((Math.random()*7));
+	var randomNumber
+
+	do
+	{
+		randomNumber = Math.floor((Math.random()*7));
+
+	} while(this.lastTetrominos.indexOf(randomNumber) > -1);
+
+	this.lastTetrominos.push(randomNumber)
+
+	if (this.lastTetrominos.length > 2)
+	{
+		console.log(this.lastTetrominos)
+
+		this.lastTetrominos = this.lastTetrominos.slice(-2);
+
+		console.log(this.lastTetrominos)
+	};
 
 	// randomNumber = 2;
 
@@ -95,7 +115,7 @@ Board.prototype.rotate = function()
 
 	if (rightMostPosition > 9)
 	{
-		this.currentTetromino.position.x -= this.blockSize;
+		this.currentTetromino.position.x -= this.blockSize * (rightMostPosition - 9);
 	}
 	else if(leftMostPosition < 0)
 	{
@@ -194,11 +214,16 @@ Board.prototype.canMoveTo = function(x, y)
 
 		// console.log(blockX + " - "+ blockY);
 
-		if (blockY >= 0 && (
-			blockX < 0 ||
-			blockX > 9 ||
-			blockY > 19 || 
-			this.lines[blockY][blockX]["type"] != 0))
+		if ((
+				blockX < 0 ||
+				blockX > 9 ||
+				blockY > 19
+			) 
+			||
+			(
+				blockY >= 0 && 
+				this.lines[blockY][blockX]["type"] != 0
+			))
 		{
 			return false;
 		}
@@ -347,7 +372,7 @@ Board.prototype.removeLine = function(line)
 
 Board.prototype.update = function(delta)
 {
-	this.timeSinceLastTetrominoMovedDown += delta;
+	// this.timeSinceLastTetrominoMovedDown += delta;
 
 	if (this.timeSinceLastTetrominoMovedDown > 1000)
 	{
