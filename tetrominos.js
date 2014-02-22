@@ -10,32 +10,74 @@ var Tetromino = function()
 
 	this.positions = [];
 
-	this.shouldShowNegativePositionBlocks = 0;
+	this.wallKicks = 
+	[ 
+		[[0,0],[-1,0],[-1,1],[0,-2],[-1,-2]],
+		[[0,0],[-1,0],[-1,-1],[0,2],[-1,2]],
+		[[0,0],[1,0],[1,1],[0,-2],[1,-2]],
+		[[0,0],[1,0],[1,-1],[0,2],[1,2]]
+	];
+
+	this.shouldShowNegativePositionBlocks = -1;
 }
 
 // Tetromino.prototype = new PIXI.DisplayObjectContainer();
 Tetromino.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 Tetromino.prototype.constructor = Tetromino;
 
-Tetromino.prototype.rotate = function()
+Tetromino.prototype.rotateRight = function()
 {
 	if (this.positions.length > 1)
 	{
 		this.rotationIndex = ++this.rotationIndex % this.positions.length;
 
-		for (var b = 0; b < this.children.length;  b++)
-		{
-			var tmpBlock = this.children[b];
-
-			tmpBlock.position.x = this.positions[this.rotationIndex][b][0]*this.blockSize;
-			tmpBlock.position.y = this.positions[this.rotationIndex][b][1]*this.blockSize;
-
-			tmpBlock.visible = (this.positions[this.rotationIndex][b][1] >= this.shouldShowNegativePositionBlocks)
-		}
+		this.setRotation();
 	};
 }
 
+Tetromino.prototype.rotateLeft = function()
+{
+	if (this.positions.length > 1)
+	{
+		console.log(this.rotationIndex)
+
+		this.rotationIndex -= 1
+
+		if (this.rotationIndex < 0)
+		{
+			this.rotationIndex = this.children.length + this.rotationIndex
+		}
+
+		this.setRotation();
+	}
+}
+
+Tetromino.prototype.setRotation = function()
+{
+	for (var b = 0; b < this.children.length;  b++)
+	{
+		var tmpBlock = this.children[b];
+
+		tmpBlock.position.x = this.positions[this.rotationIndex][b][0]*this.blockSize;
+		tmpBlock.position.y = this.positions[this.rotationIndex][b][1]*this.blockSize;
+
+		tmpBlock.visible = (this.positions[this.rotationIndex][b][1] >= this.shouldShowNegativePositionBlocks)
+	}
+}
+
+Tetromino.prototype.rotationPositions = function()
+{
+	var nextRotationIndex = (this.rotationIndex + 1) % this.positions.length;
+
+	return this.positions[this.rotationIndex];
+}
+
 Tetromino.prototype.currentPositions = function()
+{
+	return this.positions[this.rotationIndex];
+}
+
+Tetromino.prototype.currentWallKicks = function()
 {
 	return this.positions[this.rotationIndex];
 }
@@ -110,10 +152,10 @@ var TTetromino = function()
 
 	this.positions = 
 	[ 
-		[[0,0],[1,0],[2,0],[1,1]],
-		[[1,-1],[0,0],[1,0],[1,1]],
 		[[1,-1],[0,0],[1,0],[2,0]],
-		[[1,-1],[1,0],[2,0],[1,1]]
+		[[1,-1],[1,0],[2,0],[1,1]],
+		[[0,0],[1,0],[2,0],[1,1]],
+		[[1,-1],[0,0],[1,0],[1,1]]
 	];
 
 	this.addBlocks(blockTexture);
@@ -134,7 +176,7 @@ var OTetromino = function()
 
 	this.positions = 
 	[ 
-		[[0,0],[1,0],[0,1],[1,1]],
+		[[0,-1],[1,-1],[0,0],[1,0]],
 	];
 
 	this.addBlocks(blockTexture);
@@ -155,6 +197,8 @@ var ITetromino = function()
 
 	this.positions = 
 	[ 
+		[[-1,-1],[0,-1],[1,-1],[2,-1]],
+		[[1,-2],[1,-1],[1,0],[1,1]],
 		[[-1,0],[0,0],[1,0],[2,0]],
 		[[0,-2],[0,-1],[0,0],[0,1]]
 	];
@@ -180,10 +224,10 @@ var JTetromino = function()
 
 	this.positions = 
 	[
-		[[0,0],[1,0],[2,0],[2,1]],
-		[[1,-1],[1,0],[0,1],[1,1]],
 		[[0,-1],[0,0],[1,0],[2,0]],
-		[[1,-1],[2,-1],[1,0],[1,1]]
+		[[1,-1],[2,-1],[1,0],[1,1]],
+		[[0,0],[1,0],[2,0],[2,1]],
+		[[1,-1],[1,0],[0,1],[1,1]]
 	];
 
 	this.addBlocks(blockTexture);
@@ -205,10 +249,10 @@ var LTetromino = function()
 
 	this.positions = 
 	[
-		[[0,0],[1,0],[2,0],[0,1]],
-		[[0,-1],[1,-1],[1,0],[1,1]],
 		[[2,-1],[0,0],[1,0],[2,0]],
-		[[1,-1],[1,0],[1,1],[2,1]]
+		[[1,-1],[1,0],[1,1],[2,1]],
+		[[0,0],[1,0],[2,0],[0,1]],
+		[[0,-1],[1,-1],[1,0],[1,1]]
 	];
 
 	this.addBlocks(blockTexture);
@@ -229,10 +273,10 @@ var STetromino = function()
 
 	this.positions = 
 	[
+		[[1,-1],[2,-1],[0,0],[1,0]],
+		[[1,-1],[1,0],[2,0],[2,1]],
 		[[1,0],[2,0],[0,1],[1,1]],
-		[[1,0],[1,1],[2,1],[2,2]],
-		[[1,1],[2,1],[0,2],[1,2]],
-		[[0,0],[0,1],[1,1],[1,2]]
+		[[0,-1],[0,0],[1,0],[1,1]]
 	];
 
 	this.addBlocks(blockTexture);
@@ -253,10 +297,10 @@ var ZTetromino = function()
 
 	this.positions = 
 	[
+		[[0,-1],[1,-1],[1,0],[2,0]],
+		[[2,-1],[1,0],[2,0],[1,1]],
 		[[0,0],[1,0],[1,1],[2,1]],
-		[[2,0],[1,1],[2,1],[1,2]],
-		[[0,1],[1,1],[1,2],[2,2]],
-		[[1,0],[0,1],[1,1],[0,2]]
+		[[1,-1],[0,0],[1,0],[0,1]]
 	];
 
 	this.addBlocks(blockTexture);

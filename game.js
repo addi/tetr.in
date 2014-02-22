@@ -31,7 +31,7 @@ var timeSinceLastDown = 0;
 
 function pressUp(e)
 {
-	board.rotate();
+	board.rotateRight();
 }
 
 function leftDown(e)

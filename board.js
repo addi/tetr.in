@@ -99,28 +99,37 @@ Board.prototype.addTetromino = function()
 	// this.currentTetromino = new JTetromino();
 
 	this.currentTetromino.position.x = this.blockSize * 4;
-	this.currentTetromino.position.y = 0;
+	this.currentTetromino.position.y = this.blockSize;
 
 	this.addChild(this.currentTetromino);
 }
 
-Board.prototype.rotate = function()
+Board.prototype.rotateRight = function()
 {
-	this.currentTetromino.rotate();
 
-	var currentTetrominoPosition = this.currentTetromino.position.x / this.blockSize;
 
-	var rightMostPosition = currentTetrominoPosition + this.currentTetromino.rightMostBrickPosition();
-	var leftMostPosition = currentTetrominoPosition + this.currentTetromino.leftMostBrickPosition();
 
-	if (rightMostPosition > 9)
-	{
-		this.currentTetromino.position.x -= this.blockSize * (rightMostPosition - 9);
-	}
-	else if(leftMostPosition < 0)
-	{
-		this.currentTetromino.position.x += this.blockSize;
-	}
+	
+	this.currentTetromino.rotateRight();
+
+	// this.currentTetromino.rotateLeft();
+
+
+
+
+	// var currentTetrominoPosition = this.currentTetromino.position.x / this.blockSize;
+
+	// var rightMostPosition = currentTetrominoPosition + this.currentTetromino.rightMostBrickPosition();
+	// var leftMostPosition = currentTetrominoPosition + this.currentTetromino.leftMostBrickPosition();
+
+	// if (rightMostPosition > 9)
+	// {
+	// 	this.currentTetromino.position.x -= this.blockSize * (rightMostPosition - 9);
+	// }
+	// else if(leftMostPosition < 0)
+	// {
+	// 	this.currentTetromino.position.x += this.blockSize;
+	// }
 }
 
 Board.prototype.moveLeft = function()
