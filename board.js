@@ -191,30 +191,17 @@ Board.prototype.drop = function()
 		howFarDown += 1
 	}
 
+	// a bit too far down
+	howFarDown -= 1;
 
-	if (howFarDown < 2)
-	{
-		this.moveDown();
-	}
-	else
-	{
-		this.timeSinceLastTetrominoMovedDown = 0;
+	this.timeSinceLastTetrominoMovedDown = 0;
 
-		// a bit too far down
-		howFarDown -= 1;
+	this.currentTetromino.showMoreNegativeBlocks();
+	
+	this.currentTetromino.position.y += this.blockSize * howFarDown;
 
-		this.currentTetromino.showMoreNegativeBlocks();
-		
-		if (howFarDown > 1)
-		{
-			this.currentTetromino.showMoreNegativeBlocks();
-		}
-
-		this.currentTetromino.position.y += this.blockSize * howFarDown;
-
-		this.savePosition();
-		this.addTetromino();
-	}
+	this.savePosition();
+	this.addTetromino();
 }
 
 Board.prototype.canMoveTo = function(x, y)
