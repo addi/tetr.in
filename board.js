@@ -58,11 +58,11 @@ Board.prototype.addTetromino = function()
 
 	if (this.lastTetrominos.length > 2)
 	{
-		console.log(this.lastTetrominos)
+		// console.log(this.lastTetrominos)
 
 		this.lastTetrominos = this.lastTetrominos.slice(-2);
 
-		console.log(this.lastTetrominos)
+		// console.log(this.lastTetrominos)
 	};
 
 	// randomNumber = 2;
@@ -99,27 +99,41 @@ Board.prototype.addTetromino = function()
 	// this.currentTetromino = new JTetromino();
 
 	this.currentTetromino.position.x = this.blockSize * 4;
-	this.currentTetromino.position.y = 0;
+	this.currentTetromino.position.y = this.blockSize;
 
 	this.addChild(this.currentTetromino);
 }
 
-Board.prototype.rotate = function()
+Board.prototype.rotateRight = function()
 {
-	this.currentTetromino.rotate();
+	var currentXPosition = this.currentTetromino.position.x / this.blockSize;
+	var currentYPosition = this.currentTetromino.position.y / this.blockSize;
 
-	var currentTetrominoPosition = this.currentTetromino.position.x / this.blockSize;
+	this.currentTetromino.rotateRight();
 
-	var rightMostPosition = currentTetrominoPosition + this.currentTetromino.rightMostBrickPosition();
-	var leftMostPosition = currentTetrominoPosition + this.currentTetromino.leftMostBrickPosition();
-
-	if (rightMostPosition > 9)
+	if (this.canMoveTo(currentXPosition, currentYPosition) == false)
 	{
-		this.currentTetromino.position.x -= this.blockSize * (rightMostPosition - 9);
-	}
-	else if(leftMostPosition < 0)
-	{
-		this.currentTetromino.position.x += this.blockSize;
+		var wallkicks = this.currentTetromino.currentWallKicks()
+
+		var wallkickWorked = false
+
+		for (var k = 0; k < wallkicks.length;  k++)
+		{
+			if (this.canMoveTo(currentXPosition + wallkicks[k][0], currentYPosition + wallkicks[k][1]))
+			{
+				this.currentTetromino.position.x += wallkicks[k][0] * this.blockSize;
+				this.currentTetromino.position.y += wallkicks[k][1] * this.blockSize;
+
+				wallkickWorked = true;
+
+				break;
+			}
+		}
+
+		if (wallkickWorked == false)
+		{
+			this.currentTetromino.rotateLeft();
+		}
 	}
 }
 
@@ -256,7 +270,7 @@ Board.prototype.savePosition = function()
 		// shitmix, wtf is going on here? why cant i just add you as a child?!?
 		blocks.push(blockSprite)
 
-		console.log(blockY+"-"+blockX)
+		// console.log(blockY+"-"+blockX)
 
 		if (blockY >= 0 && this.lines[blockY][blockX]["type"] == 0)
 		{
