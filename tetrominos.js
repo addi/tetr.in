@@ -12,10 +12,10 @@ var Tetromino = function()
 
 	this.wallKicks = 
 	[ 
-		[[0,0],[-1,0],[-1,1],[0,-2],[-1,-2]],
-		[[0,0],[-1,0],[-1,-1],[0,2],[-1,2]],
-		[[0,0],[1,0],[1,1],[0,-2],[1,-2]],
-		[[0,0],[1,0],[1,-1],[0,2],[1,2]]
+		[[-1,0],[-1,1],[0,-2],[-1,-2]],
+		[[-1,0],[-1,-1],[0,2],[-1,2]],
+		[[1,0],[1,1],[0,-2],[1,-2]],
+		[[1,0],[1,-1],[0,2],[1,2]]
 	];
 
 	this.shouldShowNegativePositionBlocks = -1;
@@ -39,13 +39,11 @@ Tetromino.prototype.rotateLeft = function()
 {
 	if (this.positions.length > 1)
 	{
-		console.log(this.rotationIndex)
-
 		this.rotationIndex -= 1
 
 		if (this.rotationIndex < 0)
 		{
-			this.rotationIndex = this.children.length + this.rotationIndex
+			this.rotationIndex += this.children.length
 		}
 
 		this.setRotation();
@@ -79,7 +77,7 @@ Tetromino.prototype.currentPositions = function()
 
 Tetromino.prototype.currentWallKicks = function()
 {
-	return this.positions[this.rotationIndex];
+	return this.wallKicks[this.rotationIndex];
 }
 
 Tetromino.prototype.addBlocks = function(blockTexture)
@@ -201,6 +199,14 @@ var ITetromino = function()
 		[[1,-2],[1,-1],[1,0],[1,1]],
 		[[-1,0],[0,0],[1,0],[2,0]],
 		[[0,-2],[0,-1],[0,0],[0,1]]
+	];
+
+	this.wallKicks = 
+	[ 
+		[[-2,0],[1, 0],[-2,1],[1,-2]],
+		[[-1, 0],[2, 0],[-1,-2],[2,1]],
+		[[2, 0],[-1, 0],[2,-1],[-1,2]],
+		[[1, 0],[-2, 0],[1,-2],[-2,1]]
 	];
 
 	this.addBlocks(blockTexture);
