@@ -12,8 +12,6 @@ var Board = function()
 
 	this.addChild(this.boardSprite);
 
-	this.timeSinceLastTetrominoMovedDown = 0;
-
 	this.blockSize = 30;
 
 	this.boardWidth = 10
@@ -45,6 +43,8 @@ Board.prototype.constructor = Board;
 Board.prototype.addTetromino = function()
 {
 	console.log("addTetromino ... ");
+
+	this.timeSinceLastTetrominoMovedDown = 0;
 
 	var randomNumber
 
@@ -161,13 +161,13 @@ Board.prototype.moveRight = function(e)
 
 Board.prototype.moveDown = function()
 {
-	this.timeSinceLastTetrominoMovedDown = 0;
-
 	var currentXPosition = this.currentTetromino.position.x / this.blockSize;
 	var currentYPosition = this.currentTetromino.position.y / this.blockSize;
 
 	if (this.canMoveTo(currentXPosition, currentYPosition + 1))
 	{
+		this.timeSinceLastTetrominoMovedDown = 0;
+
 		this.currentTetromino.showMoreNegativeBlocks();
 
 		this.currentTetromino.position.y += this.blockSize;
@@ -186,15 +186,12 @@ Board.prototype.drop = function()
 
 	var howFarDown = 0;
 
-	while(this.canMoveTo(currentXPosition, currentYPosition + howFarDown))
+	while(this.canMoveTo(currentXPosition, currentYPosition + howFarDown + 1))
 	{
 		howFarDown += 1
 	}
 
-	// a bit too far down
-	howFarDown -= 1;
-
-	this.timeSinceLastTetrominoMovedDown = 0;
+	
 
 	this.currentTetromino.showMoreNegativeBlocks();
 	
